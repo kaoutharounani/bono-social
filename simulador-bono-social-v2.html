@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador Bono Social Eléctrico 2026 | papernest</title>
+<meta name="description" content="Calcula en tiempo real si tienes derecho al Bono Social Eléctrico 2026 y cuánto puedes ahorrar. Simulador gratuito con criterios oficiales actualizados.">
+
+<style>
+  :root {
+    --c-primary: #5A52FF;
+    --c-primary-dark: #4842D6;
+    --c-primary-light: #7E78FF;
+    --c-text: #1A1A2E;
+    --c-text-muted: #63697F;
+    --c-bg: #F7F7F9;
+    --c-card: #FFFFFF;
+    --c-border: #E5E5EC;
+    --c-success: #1ABC9C;
+    --c-success-dark: #14937A;
+    --c-success-bg: #E8F8F4;
+    --c-warning: #FFB81D;
+    --c-warning-bg: #FFF7E8;
+    --c-error: #DC2626;
+    --c-error-bg: #FBE9E9;
+    --radius-std: 14px;
+    --radius-lg: 20px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    --shadow-lg: 0 12px 32px rgba(90,82,255,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    font-family: 'Inter', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  /* --- HEADER --- */
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .header .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--c-text-muted);
+    margin-bottom: 16px;
+  }
+  .header .badge .dot {
+    width: 8px; height: 8px;
+    background: var(--c-success);
+    border-radius: 50%;
+  }
+  .header h1 {
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  .header h1 .accent { color: var(--c-primary); }
+  .header p {
+    font-size: 15px;
+    color: var(--c-text-muted);
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  /* --- LAYOUT 2 COLUMNAS --- */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 800px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--c-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Cabecera del panel - colores distintos para info vs resultado */
+  .panel-header {
+    padding: 22px 26px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .panel-header.info {
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
+  }
+  .panel-header.result {
+    background: linear-gradient(135deg, var(--c-success) 0%, var(--c-success-dark) 100%);
+    transition: background 0.4s ease;
+  }
+  .panel-header.result.not-eligible {
+    background: linear-gradient(135deg, #94A3B8 0%, #64748B 100%);
+  }
+  .panel-header.result.maybe {
+    background: linear-gradient(135deg, var(--c-warning) 0%, #CC9317 100%);
+  }
+  .panel-header .icon {
+    width: 28px; height: 28px;
+    background: rgba(255,255,255,0.22);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .panel-header .icon svg {
+    width: 16px; height: 16px;
+    stroke: white;
+    fill: none;
+    stroke-width: 2.2;
+  }
+  .panel-header .icon.euro {
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .panel-header h2 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .panel-header .subtitle {
+    font-size: 13px;
+    opacity: 0.92;
+    font-weight: 400;
+    margin-top: 2px;
+    width: 100%;
+  }
+  .panel-header > div { flex: 1; }
+
+  .panel-body {
+    padding: 26px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  /* --- FIELD GROUP (slider + label) --- */
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .field-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--c-text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .field-label .current-value {
+    background: #F4F3FF;
+    color: var(--c-primary);
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  /* --- SLIDER --- */
+  .slider-wrapper {
+    padding: 6px 0 4px;
+  }
+  .slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 100px;
+    background: var(--c-border);
+    outline: none;
+    transition: background 0.15s;
+  }
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--c-primary);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 2px 8px rgba(90,82,255,0.3);
+  }
+  .slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(90,82,255,0.4);
+  }
+  .slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--c-primary);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(90,82,255,0.3);
+  }
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--c-text-muted);
+  }
+
+  /* --- SELECT --- */
+  .select-wrapper {
+    position: relative;
+  }
+  .styled-select {
+    width: 100%;
+    padding: 12px 38px 12px 14px;
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    background: white;
+    color: var(--c-text);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  .styled-select:focus {
+    outline: none;
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px rgba(90,82,255,0.12);
+  }
+  .select-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid var(--c-text-muted);
+    border-bottom: 2px solid var(--c-text-muted);
+    pointer-events: none;
+    margin-top: -3px;
+  }
+
+  /* --- TOGGLE CHIPS --- */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    padding: 7px 12px;
+    border: 1px solid var(--c-border);
+    border-radius: 100px;
+    background: white;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    transition: all 0.15s;
+    color: var(--c-text);
+  }
+  .chip:hover {
+    border-color: var(--c-primary);
+    color: var(--c-primary);
+  }
+  .chip.selected {
+    background: var(--c-primary);
+    color: white;
+    border-color: var(--c-primary);
+  }
+
+  /* --- RESULT BOX --- */
+  .result-amount-box {
+    background: var(--c-success-bg);
+    border: 1.5px solid #B8EBDD;
+    border-radius: var(--radius-std);
+    padding: 28px 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+  .result-amount-box.not-eligible {
+    background: #F1F5F9;
+    border-color: #CBD5E1;
+  }
+  .result-amount-box.maybe {
+    background: var(--c-warning-bg);
+    border-color: #FFE3A5;
+  }
+  .result-amount {
+    font-size: 44px;
+    font-weight: 800;
+    color: var(--c-success-dark);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    transition: color 0.3s;
+  }
+  .result-amount-box.not-eligible .result-amount { color: #475569; }
+  .result-amount-box.maybe .result-amount { color: #B07A00; }
+  .result-amount .unit {
+    font-size: 24px;
+    font-weight: 700;
+    margin-left: 2px;
+  }
+  .result-amount .timeframe {
+    font-size: 13px;
+    color: var(--c-text-muted);
+    font-weight: 500;
+    margin-top: 6px;
+    display: block;
+  }
+  .result-label {
+    margin-top: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--c-success-dark);
+    transition: color 0.3s;
+  }
+  .result-amount-box.not-eligible .result-label { color: #475569; }
+  .result-amount-box.maybe .result-label { color: #B07A00; }
+  .result-sublabel {
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: var(--c-text-muted);
+  }
+
+  /* Categoría detectada */
+  .category-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: white;
+    color: var(--c-success-dark);
+    margin-bottom: 12px;
+    border: 1px solid #B8EBDD;
+  }
+  .result-amount-box.not-eligible .category-badge {
+    color: #475569;
+    border-color: #CBD5E1;
+  }
+  .result-amount-box.maybe .category-badge {
+    color: #B07A00;
+    border-color: #FFE3A5;
+  }
+
+  /* --- RESULT FOOTER (CTA + helper) --- */
+  .result-extra {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .result-extra .helper-text {
+    font-size: 14px;
+    color: var(--c-text);
+    line-height: 1.5;
+  }
+  .result-extra .helper-text strong {
+    color: var(--c-primary);
+  }
+
+  .cta-call {
+    background: var(--c-primary);
+    color: white;
+    padding: 15px 22px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.18s ease;
+    box-shadow: 0 4px 14px rgba(90,82,255,0.25);
+  }
+  .cta-call:hover {
+    background: var(--c-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(90,82,255,0.35);
+  }
+  .cta-call svg {
+    width: 18px; height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.2;
+  }
+
+  .btn-details {
+    background: white;
+    color: var(--c-text);
+    border: 1.5px solid var(--c-border);
+    padding: 13px 22px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.18s;
+  }
+  .btn-details:hover {
+    border-color: var(--c-primary);
+    color: var(--c-primary);
+  }
+  .btn-details svg {
+    width: 14px; height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.2;
+  }
+
+  /* --- DETALLES EXPANDIBLES --- */
+  .details {
+    margin-top: 24px;
+    background: var(--c-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    display: none;
+  }
+  .details.show {
+    display: block;
+    animation: slideDown 0.3s ease;
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .details-body {
+    padding: 28px;
+  }
+  .details-section + .details-section {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--c-border);
+  }
+  .details h3 {
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.01em;
+  }
+  .details h3 svg {
+    width: 18px; height: 18px;
+    stroke: var(--c-primary);
+    fill: none; stroke-width: 2;
+  }
+  .reasoning {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .reasoning-item {
+    padding: 10px 14px;
+    background: var(--c-bg);
+    border-radius: 10px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--c-text);
+  }
+  .reasoning-item strong { color: var(--c-primary); }
+  .reasoning-item.highlight {
+    background: var(--c-success-bg);
+    color: var(--c-success-dark);
+  }
+  .reasoning-item.warning {
+    background: var(--c-warning-bg);
+    color: #664A0C;
+  }
+
+  .details ol {
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .details ol li {
+    padding-left: 36px;
+    position: relative;
+    counter-increment: step;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--c-text-muted);
+  }
+  .details ol li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0; top: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--c-primary);
+    color: white;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .details ol li strong { color: var(--c-text); }
+
+  .details ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .details ul li {
+    font-size: 14px;
+    color: var(--c-text-muted);
+    padding-left: 22px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .details ul li::before {
+    content: '';
+    position: absolute;
+    left: 4px; top: 8px;
+    width: 6px; height: 6px;
+    background: var(--c-primary);
+    border-radius: 50%;
+  }
+  .details ul li strong { color: var(--c-text); }
+
+  /* --- FOOTER --- */
+  .footer {
+    text-align: center;
+    margin-top: 28px;
+    color: var(--c-text-muted);
+    font-size: 12px;
+    line-height: 1.55;
+  }
+  .footer a { color: var(--c-primary); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="badge">
+      <span class="dot"></span>
+      <span>Datos oficiales 2026 · IPREM 8.400 € · RD-ley 16/2025</span>
+    </div>
+    <h1>Calcula tu <span class="accent">Bono Social Eléctrico</span> en tiempo real</h1>
+    <p>Ajusta los datos de tu hogar y descubre al instante si cumples los requisitos y cuánto puedes ahorrar al año en tu factura de la luz.</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- PANEL IZQUIERDO: INPUTS -->
+    <div class="panel">
+      <div class="panel-header info">
+        <div class="icon">
+          <svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        </div>
+        <div>
+          <h2>Tus datos</h2>
+          <div class="subtitle">Mueve los controles para calcular tu elegibilidad</div>
+        </div>
+      </div>
+
+      <div class="panel-body">
+
+        <!-- Slider personas -->
+        <div class="field-group">
+          <div class="field-label">
+            <span>Personas en el hogar</span>
+            <span class="current-value" id="personas-display">2</span>
+          </div>
+          <div class="slider-wrapper">
+            <input type="range" class="slider" id="personas" min="1" max="8" value="2" step="1">
+            <div class="slider-labels">
+              <span>1</span>
+              <span>8+</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slider menores -->
+        <div class="field-group">
+          <div class="field-label">
+            <span>Menores de 18 años</span>
+            <span class="current-value" id="menores-display">0</span>
+          </div>
+          <div class="slider-wrapper">
+            <input type="range" class="slider" id="menores" min="0" max="6" value="0" step="1">
+            <div class="slider-labels">
+              <span>0</span>
+              <span>6+</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slider ingresos -->
+        <div class="field-group">
+          <div class="field-label">
+            <span>Ingresos anuales del hogar</span>
+            <span class="current-value" id="ingresos-display">15.000 €</span>
+          </div>
+          <div class="slider-wrapper">
+            <input type="range" class="slider" id="ingresos" min="0" max="60000" value="15000" step="500">
+            <div class="slider-labels">
+              <span>0 €</span>
+              <span>60.000+ €</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chips: tipo de hogar -->
+        <div class="field-group">
+          <div class="field-label">
+            <span>Tu situación familiar</span>
+          </div>
+          <div class="chips" id="chips-tipo">
+            <button class="chip" data-tipo="familia-numerosa">Familia numerosa</button>
+            <button class="chip" data-tipo="monoparental">Monoparental</button>
+            <button class="chip" data-tipo="pensionista">Pensionista mínima</button>
+          </div>
+        </div>
+
+        <!-- Chips: circunstancias especiales -->
+        <div class="field-group">
+          <div class="field-label">
+            <span>Circunstancias especiales</span>
+          </div>
+          <div class="chips" id="chips-circ">
+            <button class="chip" data-circ="discapacidad">Discapacidad ≥33%</button>
+            <button class="chip" data-circ="dependencia">Dependencia</button>
+            <button class="chip" data-circ="violencia">Violencia de género</button>
+            <button class="chip" data-circ="imv">IMV</button>
+            <button class="chip" data-circ="servicios-sociales">Servicios sociales</button>
+          </div>
+        </div>
+
+        <!-- Tarifa actual -->
+        <div class="field-group">
+          <div class="field-label">
+            <span>Tu tarifa actual</span>
+          </div>
+          <div class="select-wrapper">
+            <select class="styled-select" id="contract">
+              <option value="no-se">No estoy seguro</option>
+              <option value="pvpc">Tarifa PVPC (mercado regulado)</option>
+              <option value="libre">Mercado libre (Endesa, Iberdrola...)</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PANEL DERECHO: RESULTADO EN TIEMPO REAL -->
+    <div class="panel">
+      <div class="panel-header result" id="result-header">
+        <div class="icon euro">€</div>
+        <div>
+          <h2 id="result-title">Resultado</h2>
+          <div class="subtitle" id="result-subtitle">¡Buenas noticias!</div>
+        </div>
+      </div>
+
+      <div class="panel-body">
+
+        <div class="result-amount-box" id="result-box">
+          <div class="category-badge" id="category-badge">Consumidor vulnerable</div>
+          <div class="result-amount">
+            <span id="result-amount-value">194</span><span class="unit">€</span>
+          </div>
+          <span class="timeframe">de ahorro estimado al año</span>
+          <div class="result-label" id="result-label">¡Eres elegible al Bono Social!</div>
+          <div class="result-sublabel" id="result-sublabel">42,5 % de descuento sobre tu factura</div>
+        </div>
+
+        <div class="result-extra">
+          <div class="helper-text" id="helper-text">
+            <strong>papernest</strong> te llama, compara por ti y te ayuda a tramitar el Bono Social en pocos minutos.
+          </div>
+          <a href="tel:919014228" class="cta-call">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            Llámanos al 919 014 228
+          </a>
+          <button class="btn-details" id="btn-details">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span id="btn-details-text">Ver detalles</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BLOQUE DE DETALLES EXPANDIBLE -->
+  <div class="details" id="details">
+    <div class="details-body">
+
+      <div class="details-section">
+        <h3>
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Cómo hemos calculado tu elegibilidad
+        </h3>
+        <div class="reasoning" id="reasoning"></div>
+      </div>
+
+      <div class="details-section" id="steps-section">
+        <h3>
+          <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Pasos para solicitar el Bono Social
+        </h3>
+        <ol id="steps-list"></ol>
+      </div>
+
+      <div class="details-section" id="docs-section">
+        <h3>
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Documentación necesaria
+        </h3>
+        <ul id="docs-list"></ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>
+      Simulador orientativo basado en el Real Decreto 897/2017 y el RD-ley 16/2025 (descuentos vigentes hasta 31 dic 2026). Los datos no se almacenan ni se envían a ningún servidor.<br>
+      Servicio papernest, socio de Endesa · 4,6/5 en Trustpilot · <a href="tel:919014228">919 014 228</a>
+    </p>
+  </div>
+
+</div>
+
+<script>
+// ============================================
+// PARÁMETROS OFICIALES BONO SOCIAL 2026
+// ============================================
+const IPREM_ANUAL = 8400; // 14 pagas, 2026 (congelado desde 2022)
+const DESCUENTOS = {
+  vulnerable: 0.425,         // 42,5% (RD-ley 16/2025, hasta 31 dic 2026)
+  vulnerable_severo: 0.575,  // 57,5%
+  exclusion: 1.00            // 100%
+};
+const FACTURA_MEDIA_ANUAL = 720;
+const FACTURA_FN_ANUAL = 1200;
+
+// ============================================
+// STATE
+// ============================================
+const state = {
+  personas: 2,
+  menores: 0,
+  ingresos: 15000,
+  tipos: [],
+  circunstancias: [],
+  contract: 'no-se'
+};
+
+// ============================================
+// HELPERS
+// ============================================
+function formatMoney(n) {
+  return n.toLocaleString('es-ES');
+}
+
+// ============================================
+// LECTORES DE INPUTS
+// ============================================
+function bindSlider(id, displayId, formatter) {
+  const slider = document.getElementById(id);
+  const display = document.getElementById(displayId);
+  slider.addEventListener('input', () => {
+    state[id] = parseInt(slider.value);
+    display.textContent = formatter(slider.value);
+    updateGradient(slider);
+    recalc();
+  });
+  updateGradient(slider);
+}
+
+function updateGradient(slider) {
+  const min = parseInt(slider.min);
+  const max = parseInt(slider.max);
+  const val = parseInt(slider.value);
+  const pct = ((val - min) / (max - min)) * 100;
+  slider.style.background = `linear-gradient(to right, var(--c-primary) 0%, var(--c-primary) ${pct}%, var(--c-border) ${pct}%, var(--c-border) 100%)`;
+}
+
+bindSlider('personas', 'personas-display', v => v >= 8 ? '8+' : v);
+bindSlider('menores', 'menores-display', v => v >= 6 ? '6+' : v);
+bindSlider('ingresos', 'ingresos-display', v => {
+  const n = parseInt(v);
+  return n >= 60000 ? '60.000+ €' : formatMoney(n) + ' €';
+});
+
+// Chips multi-select
+document.querySelectorAll('#chips-tipo .chip').forEach(c => {
+  c.addEventListener('click', () => {
+    c.classList.toggle('selected');
+    state.tipos = [...document.querySelectorAll('#chips-tipo .chip.selected')].map(x => x.dataset.tipo);
+    recalc();
+  });
+});
+document.querySelectorAll('#chips-circ .chip').forEach(c => {
+  c.addEventListener('click', () => {
+    c.classList.toggle('selected');
+    state.circunstancias = [...document.querySelectorAll('#chips-circ .chip.selected')].map(x => x.dataset.circ);
+    recalc();
+  });
+});
+
+document.getElementById('contract').addEventListener('change', e => {
+  state.contract = e.target.value;
+  recalc();
+});
+
+// Botón ver detalles (expandir/colapsar)
+const btnDetails = document.getElementById('btn-details');
+const detailsEl = document.getElementById('details');
+const btnDetailsText = document.getElementById('btn-details-text');
+btnDetails.addEventListener('click', () => {
+  detailsEl.classList.toggle('show');
+  btnDetailsText.textContent = detailsEl.classList.contains('show') ? 'Ocultar detalles' : 'Ver detalles';
+  if (detailsEl.classList.contains('show')) {
+    setTimeout(() => detailsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+  }
+});
+
+// ============================================
+// MOTOR DE CÁLCULO
+// ============================================
+function calculate() {
+  const hasFN = state.tipos.includes('familia-numerosa');
+  const hasMono = state.tipos.includes('monoparental');
+  const hasPensionista = state.tipos.includes('pensionista');
+  const hasCircEsp = state.circunstancias.filter(c => c !== 'imv' && c !== 'servicios-sociales').length > 0;
+  const hasIMV = state.circunstancias.includes('imv');
+  const hasServSoc = state.circunstancias.includes('servicios-sociales');
+
+  let categoria = null;
+  let umbralVulnerable = null;
+  let umbralSevero = null;
+  const razonamiento = [];
+
+  if (hasFN) {
+    umbralVulnerable = Infinity;
+    umbralSevero = 2 * IPREM_ANUAL;
+    razonamiento.push(`Eres <strong>familia numerosa</strong>: acceso directo al Bono Social como consumidor vulnerable.`);
+    if (state.ingresos <= umbralSevero) {
+      categoria = 'vulnerable_severo';
+      razonamiento.push(`Tus ingresos (${formatMoney(state.ingresos)} €) están por debajo de 2× IPREM (${formatMoney(umbralSevero)} €), lo que te clasifica como <strong>vulnerable severo</strong>.`);
+    } else {
+      categoria = 'vulnerable';
+      razonamiento.push(`Tus ingresos (${formatMoney(state.ingresos)} €) están por encima de 2× IPREM, por lo que entras en la categoría de <strong>vulnerable</strong>, no severo.`);
+    }
+  } else if (hasPensionista) {
+    umbralVulnerable = 1 * IPREM_ANUAL;
+    umbralSevero = 0.5 * IPREM_ANUAL;
+    razonamiento.push(`Como <strong>pensionista con pensión mínima</strong>, el umbral para ser vulnerable es 1× IPREM (${formatMoney(umbralVulnerable)} €/año).`);
+    if (state.ingresos <= umbralSevero) {
+      categoria = 'vulnerable_severo';
+      razonamiento.push(`Tus ingresos (${formatMoney(state.ingresos)} €) están por debajo de 0,5× IPREM, lo que te clasifica como <strong>vulnerable severo</strong>.`);
+    } else if (state.ingresos <= umbralVulnerable) {
+      categoria = 'vulnerable';
+      razonamiento.push(`Tus ingresos (${formatMoney(state.ingresos)} €) están dentro del umbral de <strong>vulnerable</strong>.`);
+    } else {
+      razonamiento.push(`Tus ingresos (${formatMoney(state.ingresos)} €) superan el umbral de 1× IPREM. No cumples el requisito de renta como pensionista.`);
+    }
+  } else {
+    let mult = 1.5;
+    let multSrc = '1,5× IPREM (base)';
+    if (state.menores === 1) { mult = 2.0; multSrc = '2× IPREM (1 menor)'; }
+    if (state.menores >= 2) { mult = 2.5; multSrc = '2,5× IPREM (2 o más menores)'; }
+    if (hasMono) { mult += 0.5; multSrc += ' + 0,5× IPREM (monoparental)'; }
+    if (hasCircEsp) { mult += 0.5; multSrc += ' + 0,5× IPREM (circunstancia especial)'; }
+    umbralVulnerable = mult * IPREM_ANUAL;
+    umbralSevero = umbralVulnerable / 2;
+    razonamiento.push(`Tu umbral de renta máximo es <strong>${mult}× IPREM = ${formatMoney(umbralVulnerable)} €/año</strong> (${multSrc}).`);
+    razonamiento.push(`Para "vulnerable severo" los ingresos deben ser ≤ ${formatMoney(umbralSevero)} € (mitad del umbral vulnerable).`);
+    if (state.ingresos <= umbralSevero) {
+      categoria = 'vulnerable_severo';
+    } else if (state.ingresos <= umbralVulnerable) {
+      categoria = 'vulnerable';
+    } else {
+      razonamiento.push(`Tus ingresos (${formatMoney(state.ingresos)} €) superan el umbral máximo. No cumples el requisito de renta.`);
+    }
+  }
+
+  // Upgrade IMV
+  if (hasIMV && categoria === 'vulnerable') {
+    categoria = 'vulnerable_severo';
+    razonamiento.push(`<strong>IMV detectado:</strong> al percibir el Ingreso Mínimo Vital subes a <strong>vulnerable severo</strong>.`);
+  }
+
+  // Upgrade exclusión social
+  if (hasServSoc && categoria === 'vulnerable_severo') {
+    categoria = 'exclusion';
+    razonamiento.push(`<strong>Servicios sociales pagan ≥50% de tu factura:</strong> accedes al <strong>descuento del 100%</strong>.`);
+  }
+
+  // Cálculo del ahorro
+  let ahorroAnual = 0;
+  let porcentaje = 0;
+  if (categoria) {
+    porcentaje = DESCUENTOS[categoria];
+    const facturaBase = hasFN ? FACTURA_FN_ANUAL : FACTURA_MEDIA_ANUAL;
+    // El descuento no aplica sobre IVA (21%) ni impuesto eléctrico (~5,11%)
+    const subvencionable = facturaBase * 0.73;
+    ahorroAnual = Math.round(subvencionable * porcentaje);
+  }
+
+  return { categoria, porcentaje, ahorroAnual, umbralVulnerable, umbralSevero, razonamiento };
+}
+
+// ============================================
+// RENDER
+// ============================================
+const resultBox = document.getElementById('result-box');
+const resultHeader = document.getElementById('result-header');
+const amountValue = document.getElementById('result-amount-value');
+const resultLabel = document.getElementById('result-label');
+const resultSublabel = document.getElementById('result-sublabel');
+const categoryBadge = document.getElementById('category-badge');
+const resultSubtitle = document.getElementById('result-subtitle');
+const helperText = document.getElementById('helper-text');
+
+function recalc() {
+  const r = calculate();
+
+  if (r.categoria) {
+    const nombreCat = r.categoria === 'exclusion'
+      ? 'Riesgo de exclusión social'
+      : r.categoria === 'vulnerable_severo'
+        ? 'Consumidor vulnerable severo'
+        : 'Consumidor vulnerable';
+    const pct = Math.round(r.porcentaje * 100);
+
+    // Header verde
+    resultHeader.classList.remove('not-eligible', 'maybe');
+    resultSubtitle.textContent = '¡Buenas noticias!';
+
+    // Box verde
+    resultBox.classList.remove('not-eligible', 'maybe');
+    categoryBadge.style.display = 'inline-block';
+    categoryBadge.textContent = nombreCat;
+    amountValue.textContent = r.ahorroAnual;
+    resultLabel.textContent = '¡Eres elegible al Bono Social!';
+    resultSublabel.textContent = `${pct}% de descuento sobre tu factura PVPC`;
+
+    // Helper text contextual
+    if (state.contract === 'pvpc') {
+      helperText.innerHTML = '<strong>papernest</strong> te ayuda a preparar la solicitud y enviarla a Energía XXI. El descuento se aplica en la siguiente factura.';
+    } else if (state.contract === 'libre') {
+      helperText.innerHTML = '<strong>Importante:</strong> primero necesitas pasarte a la tarifa PVPC. Llámanos y te hacemos el cambio + la solicitud del bono <strong>gratis</strong>.';
+    } else {
+      helperText.innerHTML = '<strong>papernest</strong> revisa contigo si estás en PVPC y, si no, te hace el cambio y la solicitud del bono en un solo trámite.';
+    }
+  } else {
+    // No eligible (gris)
+    resultHeader.classList.add('not-eligible');
+    resultHeader.classList.remove('maybe');
+    resultSubtitle.textContent = 'No cumples los requisitos por renta';
+
+    resultBox.classList.add('not-eligible');
+    resultBox.classList.remove('maybe');
+    categoryBadge.style.display = 'none';
+    amountValue.textContent = '0';
+    resultLabel.textContent = 'No eres elegible al Bono Social';
+    if (r.umbralVulnerable === Infinity) {
+      resultSublabel.textContent = 'Revisa los datos introducidos';
+    } else {
+      resultSublabel.textContent = `Tu umbral máximo era ${formatMoney(r.umbralVulnerable)} € / año`;
+    }
+
+    helperText.innerHTML = 'Aunque no califiques para el Bono Social, podemos comparar tarifas y ayudarte a <strong>reducir tu factura</strong> por otras vías. Sin compromiso.';
+  }
+
+  renderDetails(r);
+}
+
+function renderDetails(r) {
+  // Razonamiento
+  const reasoningEl = document.getElementById('reasoning');
+  reasoningEl.innerHTML = '';
+  r.razonamiento.forEach(text => {
+    const div = document.createElement('div');
+    div.className = 'reasoning-item';
+    div.innerHTML = text;
+    reasoningEl.appendChild(div);
+  });
+  if (r.categoria) {
+    const highlight = document.createElement('div');
+    highlight.className = 'reasoning-item highlight';
+    const pct = Math.round(r.porcentaje * 100);
+    highlight.innerHTML = `<strong>Resultado:</strong> tienes derecho al <strong>${pct}% de descuento</strong>, lo que se traduce en un ahorro estimado de <strong>${r.ahorroAnual} €/año</strong> en tu factura de la luz.`;
+    reasoningEl.appendChild(highlight);
+  } else {
+    const warn = document.createElement('div');
+    warn.className = 'reasoning-item warning';
+    warn.innerHTML = `<strong>Importante:</strong> este simulador es orientativo. Si tu situación es límite o tienes circunstancias particulares, llámanos y lo revisamos contigo gratis.`;
+    reasoningEl.appendChild(warn);
+  }
+
+  // Pasos y docs solo si es elegible
+  const stepsSec = document.getElementById('steps-section');
+  const docsSec = document.getElementById('docs-section');
+
+  if (!r.categoria) {
+    stepsSec.style.display = 'none';
+    docsSec.style.display = 'none';
+    return;
+  }
+  stepsSec.style.display = 'block';
+  docsSec.style.display = 'block';
+
+  // Pasos según contrato
+  const stepsList = document.getElementById('steps-list');
+  stepsList.innerHTML = '';
+  let steps;
+  if (state.contract === 'pvpc') {
+    steps = [
+      '<strong>Reúne la documentación necesaria</strong> (DNI de todos los miembros mayores de 14 años, certificado de empadronamiento, etc.).',
+      '<strong>Completa el formulario oficial de Energía XXI</strong> (web, email a bonosocial@energiaxxi.com, app o teléfono 800 760 333).',
+      '<strong>Envía la documentación</strong> con el consentimiento de consulta a Hacienda firmado por todos los miembros mayores de 14 años.',
+      '<strong>Espera la respuesta</strong>: hasta 10 días hábiles. El descuento se aplica en la siguiente factura si llega ≥15 días antes de su emisión.',
+      '<strong>Renovación automática</strong> cada 2 años si sigues cumpliendo los requisitos. Familias numerosas, mientras tengan el título vigente.'
+    ];
+  } else if (state.contract === 'libre') {
+    steps = [
+      '<strong>Primero: cambia a tarifa PVPC.</strong> El Bono Social solo se aplica en el mercado regulado (Energía XXI en el caso de Endesa).',
+      '<strong>Solicita el cambio a Energía XXI</strong> por web, app o llamando al 800 760 333. Tarda ~21 días hábiles, sin corte de luz.',
+      '<strong>Una vez activo en PVPC</strong>, presenta la solicitud del Bono Social con la documentación.',
+      '<strong>El descuento entra en vigor</strong> en la siguiente factura, si llega 15 días antes de su emisión.',
+      '<strong>Atajo:</strong> te lo gestionamos nosotros gratis (cambio de mercado + solicitud del bono en un solo trámite).'
+    ];
+  } else {
+    steps = [
+      '<strong>Comprueba en qué tarifa estás:</strong> si tu factura menciona "PVPC", "Energía XXI" o "precio regulado", estás en el mercado regulado.',
+      '<strong>Si estás en mercado libre</strong> (Endesa comercializadora, Iberdrola, Naturgy...), tendrás que pasarte primero a la tarifa regulada.',
+      '<strong>Reúne la documentación</strong> y completa el formulario de Energía XXI.',
+      '<strong>Envía la solicitud</strong> por web, email, correo postal o llamando al 800 760 333.',
+      '<strong>Espera la confirmación</strong> (10 días hábiles) y te aplicarán el descuento en la siguiente factura.'
+    ];
+  }
+  steps.forEach(s => {
+    const li = document.createElement('li');
+    li.innerHTML = s;
+    stepsList.appendChild(li);
+  });
+
+  // Docs adaptados
+  const docsList = document.getElementById('docs-list');
+  docsList.innerHTML = '';
+  const docs = [
+    '<strong>Formulario oficial</strong> de solicitud del Bono Social (descargable en la web de Energía XXI).',
+    '<strong>DNI o NIE</strong> en vigor de todos los miembros de la unidad de convivencia mayores de 14 años.',
+    '<strong>Certificado de empadronamiento</strong> colectivo en vigor (menos de 3 meses) de toda la unidad de convivencia.',
+    '<strong>Última factura de la luz</strong> a nombre del titular y de la vivienda habitual.',
+    '<strong>Consentimiento de consulta a Hacienda</strong> firmado por todos los miembros mayores de 14 años (en el propio formulario).'
+  ];
+  if (state.tipos.includes('familia-numerosa')) docs.push('<strong>Título de familia numerosa</strong> en vigor (expedido por la Comunidad Autónoma).');
+  if (state.tipos.includes('monoparental')) docs.push('<strong>Título o certificado de familia monoparental</strong>, o libro de familia con acreditación.');
+  if (state.tipos.includes('pensionista')) docs.push('<strong>Certificado de la pensión</strong> de la Seguridad Social (mínima o no contributiva).');
+  if (state.circunstancias.includes('discapacidad')) docs.push('<strong>Certificado de discapacidad ≥33%</strong> del miembro afectado.');
+  if (state.circunstancias.includes('dependencia')) docs.push('<strong>Resolución de dependencia</strong> grado II o III.');
+  if (state.circunstancias.includes('violencia')) docs.push('<strong>Acreditación oficial</strong> de víctima de violencia de género o terrorismo.');
+  if (state.circunstancias.includes('imv')) docs.push('<strong>Certificado del IMV</strong> emitido por la Seguridad Social.');
+  if (state.circunstancias.includes('servicios-sociales')) docs.push('<strong>Certificado de servicios sociales</strong> donde conste que cubren ≥50% de tu factura.');
+  docs.forEach(d => {
+    const li = document.createElement('li');
+    li.innerHTML = d;
+    docsList.appendChild(li);
+  });
+}
+
+// Cálculo inicial
+recalc();
+</script>
+
+</body>
+</html>
